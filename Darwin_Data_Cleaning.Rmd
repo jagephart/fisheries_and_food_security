@@ -1,0 +1,167 @@
+---
+title: "Darwin_Data_Cleaning"
+author: "Jessica Gephart"
+date: "3/11/2019"
+output: html_document
+---
+
+## Combine surveys
+
+### Load packages and assign directory paths
+```{r, echo=FALSE}
+rm(list=ls())
+library(tidyverse)
+library(easycsv)
+
+# Specify directory paths
+in_dir <- "/nfs/jgephart-data/Darwin_data/1d Unzipped Monthly Survey Data" 
+out_dir <- "/nfs/jgephart-data/Darwin_data/outputs"
+```
+
+### Create list of folders to load csv's
+```{r, echo=FALSE}
+folder_names <- list.files(in_dir,full.names=T) #this is the list of folder with RAW data information
+
+#Screening to remove the directories that are not relevant
+folder_names <- folder_names[grep(folder_names, pattern = "copy", invert = TRUE)]
+folder_names <- folder_names[grep(folder_names, pattern = "MISC", invert = TRUE)]
+
+folder_names <- unlist(lapply(folder_names,
+                        function(x){list.files(path=x,full.names=T)}))
+
+```
+
+### Load files and bind by survey name
+```{r, echo=FALSE}
+
+for(i in 1:length(folder_names)){
+  fread_folder(folder_names[i], data.table = FALSE)
+}
+
+file_names <- Filter(function(x) is.data.frame(get(x)), ls())
+
+# Bind rows of single part surveys
+# Fahasalamana
+survey_df <- file_names[grep(file_names, pattern =  "Fahasalamana")]
+
+df <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+Fahasalamana <- df
+write.csv(Fahasalamana, file = file.path(out_dir, file = "Fahasalamana.csv"), row.names=FALSE)
+
+# Fahasalamana isanbolana
+survey_df <- file_names[grep(file_names, pattern =  "Fahasalamana isanbolana")]
+
+df <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+Fahasalamana_isanbolana <- df
+write.csv(Fahasalamana_isanbolana, file = file.path(out_dir, "Fahasalamana_isanbolana.csv"), row.names=FALSE)
+
+# Measure Sakafo
+survey_df <- file_names[grep(file_names, pattern =  "Measure Sakafo")]
+
+df <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+Measure_Sakafo <- df
+write.csv(Measure_Sakafo, file = file.path(out_dir, "Measure_Sakafo.csv"), row.names=FALSE)
+
+# Vola isambolana
+survey_df <- file_names[grep(file_names, pattern =  "Vola isambolana")]
+
+df <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+Vola_isambolana <- df
+write.csv(Vola_isambolana, file = file.path(out_dir, "Vola_isambolana.csv"), row.names=FALSE)
+
+# Bind columns, then rows of multi-part surveys
+# Karazan-tsakafo
+survey_df_all <- file_names[grep(file_names, pattern =  "Karazan-tsakafo")]
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
+df1 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df1 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "2 avy")]
+df2 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df2 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "3 avy")]
+df3 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df3 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+Karazan_tsakafo <- cbind.fill(df1, df2)
+Karazan_tsakafo <- cbind.fill(Karazan_tsakafo, df3)
+write.csv(Karazan_tsakafo, file = file.path(out_dir, "Karazan_tsakafo.csv"), row.names=FALSE)
+
+# Laoko
+survey_df_all <- file_names[grep(file_names, pattern =  "Laoko")]
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
+df1 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df1 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "2 avy")]
+df2 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df2 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "3 avy")]
+df3 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df3 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+Laoko <- cbind.fill(df1, df2)
+Laoko <- cbind.fill(Laoko, df3)
+write.csv(Laoko, file = file.path(out_dir, "Laoko.csv"), row.names=FALSE)
+
+# Mpanjono
+survey_df_all <- file_names[grep(file_names, pattern =  "Mpanjono")]
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
+df1 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df1 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+survey_df <- survey_df_all[grep(survey_df_all, pattern = "2 avy")]
+df2 <- rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
+for(i in 3:length(survey_df)){
+  df2 <- rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+}
+
+Mpanjono <- cbind.fill(df1, df2)
+write.csv(Mpanjono, file = file.path(out_dir, "Mpanjono.csv"), row.names=FALSE)
+
+```
+
+## Clean combined survey files
+
+### Clean environment, reload packages, and load compiled data for cleaning
+```{r, echo=FALSE}
+rm(list=ls())
+library(tidyverse)
+library(easycsv)
+
+dir <- "/nfs/jgephart-data/Darwin_data/outputs"
+fread_folder(dir, data.table = FALSE)
+
+```
+
+
+
+
