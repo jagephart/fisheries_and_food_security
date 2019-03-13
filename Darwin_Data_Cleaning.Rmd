@@ -188,21 +188,28 @@ colnames(Mpanjono)[colnames(Mpanjono)== "Start Date"] <- "Start.Date"
 summary_village_date <- function(df){
   df$Start.Date <-as.Date(df$Start.Date, format = "%d/%m/%Y")
   df$YRMO <- as.factor(paste(year(df$Start.Date), month(df$Start.Date)))
-  df %>% 
+  summary_table <- df %>% 
     group_by(YRMO, Village) %>%
     summarise()
+  return(summary_table)
 }
 
-summary_village_date(Fahasalamana)
+summary_table <- summary_village_date(Fahasalamana)
+write.csv(summary_table, "summary_table_Fahasalamana.csv", row.names=FALSE)
 summary_village_date(Fahasalamana_isanbolana)
+write.csv(summary_table, "summary_table_Fahasalamana_isanbolana.csv", row.names=FALSE)
 summary_village_date(Measure_Sakafo)
+write.csv(summary_table, "summary_table_Measure_Sakafo.csv", row.names=FALSE)
 summary_village_date(Vola_isambolana)
+write.csv(summary_table, "summary_table_Vola_isambolana.csv", row.names=FALSE)
 summary_village_date(Karazan_tsakafo)
+write.csv(summary_table, "summary_table_Karazan_tsakafo.csv", row.names=FALSE)
 summary_village_date(Laoko)
+write.csv(summary_table, "summary_table_Laoko.csv", row.names=FALSE)
 summary_village_date(Mpanjono)
+write.csv(summary_table, "summary_table_Mpanjono.csv", row.names=FALSE)
 
 ```
-
 
 
 ### SECTION TITLE
