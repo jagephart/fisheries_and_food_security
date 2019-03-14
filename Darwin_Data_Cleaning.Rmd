@@ -42,7 +42,7 @@ file_names <- Filter(function(x) is.data.frame(get(x)), ls())
 
 # Bind rows of single part surveys
 # Fahasalamana
-survey_df <- file_names[grep(file_names, pattern =  "Fahasalamana")]
+survey_df <- file_names[grep(file_names, pattern =  "Fahasalamana")] # FIXIT: Exclude "Fahasalamana isanbolana"
 
 df <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
@@ -82,6 +82,7 @@ Vola_isambolana <- df
 write.csv(Vola_isambolana, file = file.path(out_dir, "Vola_isambolana.csv"), row.names=FALSE)
 
 # Bind columns, then rows of multi-part surveys
+# FIXIT: Dates come in multiple formats; convert to standard format before joining
 # Karazan-tsakafo
 survey_df_all <- file_names[grep(file_names, pattern =  "Karazan-tsakafo")]
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
@@ -167,7 +168,7 @@ fread_folder(dir, data.table = FALSE)
 2. Drop empty columns
 3. Convert to correct data types (i.e. date, numeric, character, etc.). May have to remove text from numeric fields. 
 4. Remove duplicate observations
-5. Make data "tidy", where needed (e.g. with fish data)
+5. Make data "tidy", where needed (e.g. with fish data) --> JAG has code for this
 6. Check for:
 * Number of observations in date-village combinations
 * Outliers 
