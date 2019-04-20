@@ -13,6 +13,7 @@ rm(list=ls())
 library(easycsv)
 library(tidyverse)
 library(lubridate)
+library(janitor)
 
 # Specify directory paths
 in_dir <- "/nfs/jgephart-data/Darwin_data/1d Unzipped Monthly Survey Data" 
@@ -111,26 +112,27 @@ survey_df_all <- file_names[grep(file_names, pattern =  "Karazan-tsakafo")]
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
 df1 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df1 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df1 <- plyr::rbind.fill(df1, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df1$`Start Date` <-dmy(df1$`Start Date`)
 
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "2 avy")]
 df2 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df2 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df2 <- plyr::rbind.fill(df2, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df2$`Start Date` <-dmy(df2$`Start Date`)
 
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "3 avy")]
 df3 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df3 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df3 <- plyr::rbind.fill(df3, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df3$`Start Date` <-dmy(df3$`Start Date`)
 
-Karazan_tsakafo <- full_join(df1, df2, by = c("Start Date", "Village", "Household"))
-Karazan_tsakafo <- full_join(Karazan_tsakafo, df3, by = c("Start Date", "Village", "Household"))
+Karazan_tsakafo <- full_join(df1, df2, by = c("Start Date", "Code Village", "Code Trano"))
+Karazan_tsakafo <- full_join(Karazan_tsakafo, df3, by = c("Start Date", "Code Village", "Code Trano"))
+Karazan_tsakafo <- remove_empty(Karazan_tsakafo, which = "cols")
 write.csv(Karazan_tsakafo, file = file.path(out_dir, "Karazan_tsakafo.csv"), row.names=FALSE)
 
 # Laoko
@@ -138,26 +140,27 @@ survey_df_all <- file_names[grep(file_names, pattern =  "Laoko")]
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
 df1 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df1 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df1 <- plyr::rbind.fill(df1, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df1$`Start Date` <-dmy(df1$`Start Date`)
 
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "2 avy")]
 df2 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df2 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df2 <- plyr::rbind.fill(df2, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df2$`Start Date` <-dmy(df2$`Start Date`)
 
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "3 avy")]
 df3 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df3 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df3 <- plyr::rbind.fill(df3, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df3$`Start Date` <-dmy(df3$`Start Date`)
 
 Laoko <- full_join(df1, df2, by = c("Start Date", "Village", "Household"))
 Laoko <- full_join(Laoko, df3, by = c("Start Date", "Village", "Household"))
+Laoko <- remove_empty(Laoko, which = "cols")
 write.csv(Laoko, file = file.path(out_dir, "Laoko.csv"), row.names=FALSE)
 
 # Mpanjono
@@ -165,18 +168,21 @@ survey_df_all <- file_names[grep(file_names, pattern =  "Mpanjono")]
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "1 avy")]
 df1 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df1 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df1 <- plyr::rbind.fill(df1, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df1$`Start Date` <-dmy(df1$`Start Date`)
+df1$Village <- as.character(df1$Village)
 
 survey_df <- survey_df_all[grep(survey_df_all, pattern = "2 avy")]
 df2 <- plyr::rbind.fill(eval(parse(text = paste("`",survey_df[1],"`", sep=""))), eval(parse(text = paste("`",survey_df[2],"`", sep=""))))
 for(i in 3:length(survey_df)){
-  df2 <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
+  df2 <- plyr::rbind.fill(df2, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 df2$`Start Date` <-dmy(df2$`Start Date`)
 
-Mpanjono <- full_join(df1, df2, by = c("Start Date", "Village", "Household"))
+
+Mpanjono <- full_join(df1, df2, by = c("Start Date", "Village", "Name of fisherman", "Household and Indivual Code"))
+Mpanjono <- remove_empty(Mpanjono, which = "cols")
 write.csv(Mpanjono, file = file.path(out_dir, "Mpanjono.csv"), row.names=FALSE)
 
 ```
