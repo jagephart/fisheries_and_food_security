@@ -73,6 +73,7 @@ for(i in 3:length(survey_df)){
   df <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 Fahasalamana <- df
+Fahasalamana <- remove_empty(Fahasalamana, which = "cols")
 write.csv(Fahasalamana, file = file.path(out_dir, file = "Fahasalamana.csv"), row.names=FALSE)
 
 # Fahasalamana isanbolana
@@ -93,6 +94,7 @@ for(i in 3:length(survey_df)){
   df <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 Measure_Sakafo <- df
+Measure_Sakafo <- remove_empty(Measure_Sakafo, which = "cols")
 write.csv(Measure_Sakafo, file = file.path(out_dir, "Measure_Sakafo.csv"), row.names=FALSE)
 
 # Vola isambolana
@@ -103,6 +105,7 @@ for(i in 3:length(survey_df)){
   df <- plyr::rbind.fill(df, eval(parse(text = paste("`",survey_df[i],"`", sep=""))))
 }
 Vola_isambolana <- df
+Vola_isambolana <- remove_empty(Vola_isambolana, which = "cols")
 write.csv(Vola_isambolana, file = file.path(out_dir, "Vola_isambolana.csv"), row.names=FALSE)
 
 # Bind columns, then rows of multi-part surveys
