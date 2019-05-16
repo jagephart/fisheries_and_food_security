@@ -22,21 +22,13 @@ out_dir <- "/nfs/jgephart-data/Darwin_data/outputs"
 
 ### Functions
 ```{r, echo = FALSE}
-multidate <- function(data, formats){
-    a<-list()
-    for(i in 1:length(formats)){
-        a[[i]]<- as.Date(data,format=formats[i])
-        a[[1]][!is.na(a[[i]])]<-a[[i]][!is.na(a[[i]])]
-        }
-    a[[1]]
-}
-
 multidate <- function(x){
   dmy <- dmy(x) 
   mdy <- dmy(x) 
   mdy[is.na(mdy)] <- dmy[is.na(mdy)] 
   return(dmy)
 }
+
 
 ```
 
@@ -136,6 +128,33 @@ df3$`Start Date` <-dmy(df3$`Start Date`)
 Karazan_tsakafo <- full_join(df1, df2, by = c("Start Date", "Code Village", "Code Trano"))
 Karazan_tsakafo <- full_join(Karazan_tsakafo, df3, by = c("Start Date", "Code Village", "Code Trano"))
 Karazan_tsakafo <- remove_empty(Karazan_tsakafo, which = "cols")
+
+# Identify columns containing .x or .y
+duplicate_cols <- colnames(Karazan_tsakafo)[grep(".x$", colnames(Karazan_tsakafo))]
+duplicate_cols <- str_replace(duplicate_cols, pattern = ".x", replacement = "")
+# Merge information from duplicate columns
+
+for(i in 1:length(duplicate_cols)){
+  Karazan_tsakafo[paste(duplicate_cols[i])] <- c()
+  for(j in 1:nrow(Karazan_tsakafo)){
+     if(is.na(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]) == TRUE & is.na(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]) == TRUE){
+       Karazan_tsakafo[j, paste(duplicate_cols[i])] <- NA
+       }
+    if(is.na(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]) == FALSE & is.na(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]) == TRUE){
+      Karazan_tsakafo[j, paste(duplicate_cols[i])] <- Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]
+      }
+    if(is.na(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]) == TRUE & is.na(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")]) == FALSE){
+      Karazan_tsakafo[j, paste(duplicate_cols[i])] <- Karazan_tsakafo[j, paste(duplicate_cols[i], ".y", sep = "")]
+      } else{
+        Karazan_tsakafo[j, paste(duplicate_cols[i])] <- paste(Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")], Karazan_tsakafo[j, paste(duplicate_cols[i], ".x", sep = "")], sep = ";")
+      }
+    }
+}
+
+# Drop columns ending in .x or .y
+remove_cols <- c(colnames(Karazan_tsakafo)[grep(".x$", colnames(Karazan_tsakafo))], colnames(Karazan_tsakafo)[grep(".y$", colnames(Karazan_tsakafo))])
+Karazan_tsakafo <- Karazan_tsakafo[ , -which(names(Karazan_tsakafo) %in% remove_cols)]
+
 write.csv(Karazan_tsakafo, file = file.path(out_dir, "Karazan_tsakafo.csv"), row.names=FALSE)
 
 # Laoko
