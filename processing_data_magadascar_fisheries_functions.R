@@ -120,8 +120,6 @@ read_file_feed2go <- function(in_filename,in_dir=NULL){
                            stringsAsFactors = F,
                            check.names=F))
     }
-    
-    ### Adding another separator (",") if number of rows still equal to 1
 
 
     ###### Part 2: deal with error and/or warning
@@ -139,6 +137,7 @@ read_file_feed2go <- function(in_filename,in_dir=NULL){
         df <- try(read.table(in_filename,sep=",",
                              header=T,
                              stringsAsFactors = F,
+                             fileEncoding="UTF-8", # NEW
                              check.names=F))
       }
   

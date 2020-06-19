@@ -60,20 +60,17 @@ load_obj <- function(f){
 }
 
 ### Other functions ####
-
-function_processing_data <- "processing_data_madagascar_fisheries_functions_03042019.R" #PARAM 1
-script_path <- "/nfs/bparmentier-data/Data/projects/Fisheries_and_food_security/scripts" #path to script #PARAM 
-source(file.path(script_path,function_processing_data)) #source all functions used in this script 1.
+source("processing_data_magadascar_fisheries_functions.R") #source all functions used in this script 1
 
 ############################################################################
 #####  Parameters and argument set up ###########
 
 #version1
-in_dir <- "/nfs/bparmentier-data/Data/projects/Fisheries_and_food_security/workflow_preprocessing/data" #local bpy50 , param 1
+#in_dir <- "/nfs/bparmentier-data/Data/projects/Fisheries_and_food_security/workflow_preprocessing/data" #local bpy50 , param 1
 #version2
-in_dir <- "/nfs/bparmentier-data/Data/projects/Fisheries_and_food_security/workflow_preprocessing/data/data2" #local bpy50 , param 1
+in_dir <- "/nfs/jgephart-data/Darwin_data/1d Unzipped Monthly Survey Data" #local bpy50 , param 1
 
-out_dir <- "/nfs/bparmentier-data/Data/projects/Fisheries_and_food_security/workflow_preprocessing/outputs" #param 2
+out_dir <- "/nfs/jgephart-data/Darwin_data/outputs" #param 2
 
 num_cores <- 2 #param 8
 create_out_dir_param=TRUE # param 9
@@ -97,8 +94,9 @@ combine_by_dir <- TRUE #if TRUE then examine in each directory if files are spli
 
 combine_option <- "byrow" #This is the option to combine avy byrow or column
 
-dataset_version <- 2
 #dataset_version <- 1
+dataset_version <- 2
+
 
 ############## START SCRIPT ############################
 
@@ -122,7 +120,7 @@ if(create_out_dir_param==TRUE){
 #set up the working directory
 #Create output directory
 
-if(data_version==1){
+if(dataset_version==1){
   #
   lf_dir <- list.files(in_dir,full.names=T) #this is the list of folder with RAW data information
   ##Get zip files in each input RAW dir
@@ -168,13 +166,14 @@ if(data_version==1){
 }
 
 
-if(data_version==2){
+if(dataset_version==2){
   #
   
   lf_dir <- list.files(in_dir,full.names=T) #this is the list of folder with RAW data information
   
   #Screening to remove the directories that are not relevant
-  #MISC and "use paper copy" etc.
+  lf_dir <- lf_dir[grep(lf_dir, pattern = "copy", invert = TRUE)]
+  lf_dir <- lf_dir[grep(lf_dir, pattern = "MISC", invert = TRUE)]
   
   ##
   
@@ -192,7 +191,7 @@ if(data_version==2){
 
 ############# Summarize inputs ################
   
-debug(summary_data_table)
+#debug(summary_data_table)
 list_obj_summary_test <- summary_data_table(list_lf_r[[1]]) 
 
 list_obj_summary <- mclapply(list_lf_r, 
